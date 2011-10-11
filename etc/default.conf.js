@@ -1,5 +1,12 @@
+// Kultura Meta Search
+// configuration file
+// it is currently evalled in the global context, so no monkey business
+// TODO: at least sandbox, or figure out how to parse non-strict json
 {	
-	defaultSource: {
+	// all sources will be templated against this
+	// i.e. they will get all values from here, overriden by values defined per source
+	// {{{id}}} gets replaced with source id
+	source_template: {
 		host: 'services.ljudmila.net',
 		port: 80,
 		path: '/scrapers/{{{id}}}.php'
@@ -40,19 +47,19 @@
 	},
 	paths: {
 		"/": {
-			file: "static/index.html",
+			file: "client/index.html",
 			type: "text/html"
 		},
 		"/jq.js": {
-			file: "static/jq.js",
+			file: "client/jq.js",
 			type: "application/javascript"
 		},
 		"/kultura.js": {
-			file: "static/kultura.js",
+			file: "client/kultura-client.js",
 			type: "application/javascript"
 		},
 		"/kultura.css": {
-			file: "static/kultura.css",
+			file: "client/kultura.css",
 			type: "text/css"
 		}
 	},

@@ -2,43 +2,42 @@
 // (c) 2011 user:zocky @ wiki.ljudmila.org
 // GPL 3.0 applies
 //
-// the transceiver
+// meta search collater
+/*
 
-var http = require('http');
-var fs = require('fs');
-var url = require('url');
-var config = require('./config.js');
+loops through a list of sources and relays their results to the client
 
-
-// helpers
-
-// classic get url function
-function wget (options, onSuccess, onFail) {
-	console.log(options.host,options.port,options.path);
-	http.get(options, function(res) {
-		res.setEncoding('utf8');
-		var data = '';
-		res.on('data',function(chunk) { data+=chunk; });
-		res.on('end',function() {
-			onSuccess(data);
-		});
-	}).on('error', function() {
-		console.log(options);
-		onFail();
-	});
+expects results in JSON format:
+{
+	results: [{	
+		url, 
+		title, 
+		description, 
+		image 
+	}, ... ]
 }
-// send file from fs to http client
-function sendFile(res,filename) {
-	console.log('sending file '+filename);
-	fs.readFile(filename, function (err, data) {
-		if (err) {
-			res.writeHead(500);
-			return res.end('Error loading ' + filename);
-		}
-		res.writeHead(200);
-		res.end(data);
-	});
+
+forwards results in JSON format:
+{
+	source: {
+		id, 
+		name, 
+		home 
+	},
+	results: [{	
+		url, 
+		title, 
+		description, 
+		image 
+	}, ... ]
 }
+*/
+
+////////////////////////
+//
+//    C O N F I G
+//
+
 // load initial configuration, or die
 function loadConfig(opt) {
 	opt.configure = configure;
@@ -95,8 +94,38 @@ function configure (opt,data) {
 		console.log('added source '+i);
 	}
 	// copy paths of static files
-	_this.paths = data.paths;
+	_this.paths = {};
+	for (var i in clientPaths) {
+		_this.paths[i]=clientPaths[i];
+	}
+	for (var i in data.paths) {
+		_this.paths[i]=data.paths[i];
+	}
 }
+
+var clientPaths = {
+	"/": {
+		file: "client/index.html",
+		type: "text/html"
+	},
+	"/jq.js": {
+		file: "client/jq.js",
+		type: "application/javascript"
+	},
+	"/kultura.js": {
+		file: "client/kultura-client.js",
+		type: "application/javascript"
+	},
+	"/kultura.css": {
+		file: "client/kultura.css",
+		type: "text/css"
+	}
+}
+
+////////////////////////////////
+//
+//    H T T P    S E R V E R
+//
 
 // handle http requests 
 function onHttpRequest (req,res) {
@@ -115,6 +144,25 @@ function onHttpRequest (req,res) {
 		res.end('No such such.');
 	}
 }
+
+// send file from fs to http client
+function sendFile(res,filename) {
+	console.log('sending file '+filename);
+	fs.readFile(filename, function (err, data) {
+		if (err) {
+			res.writeHead(500);
+			return res.end('Error loading ' + filename);
+		}
+		res.writeHead(200);
+		res.end(data);
+	});
+}
+
+////////////////////////////////////////
+//
+//    S O C K E T    S E R V E R
+//
+
 
 // handle socket connection
 function onSocketConnected (socket) {
@@ -156,8 +204,33 @@ function onSocketConnected (socket) {
 	socket.emit('welcome', {protocol:'kultura',version:'0.1prealpha'});
 };
 
-var _this = exports;
+// classic get url function
+function wget (options, onSuccess, onFail) {
+	console.log(options.host,options.port,options.path);
+	http.get(options, function(res) {
+		res.setEncoding('utf8');
+		var data = '';
+		res.on('data',function(chunk) { data+=chunk; });
+		res.on('end',function() {
+			onSuccess(data);
+		});
+	}).on('error', function() {
+		console.log(options);
+		onFail();
+	});
+}
 
+////////////////////////////////
+//
+//    S E T U P
+//
+var http = require('http');
+var fs = require('fs');
+var url = require('url');
+var config = require('../lib/config.js');
+
+
+var _this = exports;
 // start servers
 exports.init = function (opt) {
 	_this.port = opt.port || 9701;
@@ -168,5 +241,4 @@ exports.init = function (opt) {
 	loadConfig(opt);	
 	return _this;
 }
-
 

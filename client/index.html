@@ -1,0 +1,38 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<title>Kulturec</title> 
+	    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="client.js"></script>
+	    <link href="client.css" rel="stylesheet" type="text/css" /> 
+	</head>
+	<body>
+		<div id="logo"><img src="http://services.ljudmila.net/static/culture.si.png" title="culture.si logo. (c) ljudmila.org. All rights reserved."></div>
+		<div id="header">
+			<form action="?">
+				<input id="q" name="q">
+				<input type="submit" value="&gt;&gt;">
+			</form>
+		</div>
+		<div id="sidebar">
+		</div>
+		<div id="content">
+			<div class="heading" id="heading-defs">defs</div>
+			<div id="defs" class="box"></div>
+			<div class="heading" id="heading-events">web</div>
+			<div id="events" class="box"></div>
+			<div class="heading" id="heading-news">news</div>
+			<div id="news" class="box"></div>
+			<div class="heading" id="heading-news">contacts</div>
+			<div id="contacts" class="box"></div>
+			<div class="heading" id="heading-images">images</div>
+			<div id="images" class="box"></div>
+			<div class="heading" id="heading-data">data</div>
+			<div id="data" class="box"></div>
+			<div class="heading" id="heading-web">web</div>
+			<div id="web" class="box"></div>
+		</div>
+	</body>
+</html>
