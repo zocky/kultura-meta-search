@@ -50,11 +50,11 @@ var CLIENT = (function() {
 		str = str || '';
 		return str.length>len ? str.substr(0,len-1)+'…' : str;
 	}
-	function makeResult (src, res) {
+	function makeResult (src, res, search) {
 		var title = shorten(res.title,40- (res.image ? 5 : 0));
 		var description = shorten(res.description,200);
 		return $(
-			'<div id="def-'+src.id+'" class="result '+res.type+'">'
+			'<div data-source="'+src.id+'"class="result '+res.type+'">'
 		+		'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
 		+	(res.image ? '<a href="'+res.url+'"><img class="image" title="'+res.title+'" src="'+res.image+'"></a>' : '')
 		+		'<div class="title"><a href="'+res.url+'" title="'+res.title+'">'+title+'</a></div>'
@@ -64,14 +64,14 @@ var CLIENT = (function() {
 		);
 	}
 	var addResultByType = {
-		_: function (src,res) {
+		_: function (src,res,search) {
 			var $res = makeResult(src,res);
 			$('#'+res.type).append($res);
 			$('#heading-'+res.type).add('#'+res.type).css('display','block');
 			return $res;
 		},
-		image: function (src,res) {
-			var $res = makeResult(src,res);
+		image: function (src,res,search) {
+			var $res = makeResult(src,res,search);
 			$images = $('#image .result');
 			if ($images.length == 0) {
 				$('#heading-'+res.type).add('#'+res.type).css('display','block');
@@ -80,17 +80,18 @@ var CLIENT = (function() {
 				$images.eq((Math.random()*$images.length)|0).after($res);
 			}
 		},
-		data: function(src,res) {
+		data: function(src,res,search) {
 			$('#heading-data, #data').css('display','block');
 			if (!$('#data-'+src.id).length) {
 				$('#data').append(
 					'<div id="data-'+src.id+'" class="datasource">'
 				+		'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
+				+		'<div class="more"><a href="'+search+'">more</a></div>'
 				+		'<div class="scroll"></div>'
 				+	'</div>'
 				);
 			}
-			$('#data-'+src.id+' > .scroll').append(makeResult(src,res));
+			$('#data-'+src.id+' > .scroll').append(makeResult(src,res,search));
 		}
 	}
 	
@@ -105,12 +106,12 @@ var CLIENT = (function() {
 		types: {},
 		sources: {}
 	};
-	function addResult(src,res) {
+	function addResult(src,res,search) {
 		ret.types[res.type] = ret.types[res.type] || [];
 		ret.types[res.type].push(res);
 		ret.sources[src.id] = ret.sources[src.id] || [];
 		ret.sources[src.id].push(res);
-		(addResultByType[ res.type ] || addResultByType._) ( src , res );
+		(addResultByType[ res.type ] || addResultByType._) ( src , res , search );
 	}
 	var haveSearched = false;
 	function setup () {
@@ -130,7 +131,7 @@ var CLIENT = (function() {
 		});
 		socket.on('results', function (data) {
 			for (var i in data.results) {
-				addResult(data.source,data.results[i]);
+				addResult(data.source,data.results[i],data.search);
 			}
 		});
 		socket.on('endresults', function (data) {

@@ -187,6 +187,7 @@ function onSocketConnected (socket) {
 						data = JSON.parse(data);
 						var send = {
 							source: src.send,
+							search: data.search,
 							results: []
 						}
 						for (var i in data.results) {

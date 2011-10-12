@@ -103,6 +103,7 @@ clear:both;
   width:24em;
   height:12em;
   overflow:hidden;
+  position:relative;
   box-shadow:0 0px 3px #ccc;
 }
 #data .datasource > .source {
@@ -188,6 +189,11 @@ clear:both;
   display:none;
   white-space:nowrap;
 }
+#data .datasource .more {
+  position:absolute;
+  right:0.5em;
+  top:0em;
+}
 #def .title, #def .url {
   font-size:12px;
   display:inline;
@@ -210,6 +216,7 @@ clear:both;
   background:black;
   padding:0 0.25em;
   margin:0;
+  font-size:66.6%;
   opacity:0.66;
   box-shadow: 0 0 2px black;
 }
