@@ -20,6 +20,17 @@
 }
 */
 
+jQuery.jQueryRandom = 0;
+jQuery.extend(jQuery.expr[":"],
+{
+    random: function(a, i, m, r) {
+        if (i == 0) {
+            jQuery.jQueryRandom = Math.floor(Math.random() * r.length);
+        };
+        return i == jQuery.jQueryRandom;
+    }
+});
+
 var CLIENT = (function() {
 	function urlencode (str) {
 		str = (str + '').toString();
@@ -35,10 +46,14 @@ var CLIENT = (function() {
 		var results = regex.exec( window.location.href );
 		return results === null ? '' : urldecode(results[1]);
 	}
+	function shorten(str,len) {
+		str = str || '';
+		return str.length>len ? str.substr(0,len-1)+'…' : str;
+	}
 	function makeResult (src, res) {
-		var title = res.title.length>60 ? res.title.substr(0,57)+'...' : res.title;
-		var description = res.description && res.description.length>200 ? res.description.substr(0,197)+'...' : res.description;
-		return (
+		var title = shorten(res.title,40- (res.image ? 5 : 0));
+		var description = shorten(res.description,200);
+		return $(
 			'<div id="def-'+src.id+'" class="result '+res.type+'">'
 		+		'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
 		+	(res.image ? '<a href="'+res.url+'"><img class="image" title="'+res.title+'" src="'+res.image+'"></a>' : '')
@@ -50,17 +65,23 @@ var CLIENT = (function() {
 	}
 	var addResultByType = {
 		_: function (src,res) {
-			$('#'+res.type).append(this.makeResult(src,res));
-			$('#heading-'+res.type).css('display','block');
+			var $res = makeResult(src,res);
+			$('#'+res.type).append($res);
+			$('#heading-'+res.type).add('#'+res.type).css('display','block');
+			return $res;
 		},
-		def: function (src,res) {
-			var txt = this.makeResult(src,res);
-			console.log(txt);
-			$('#defs').append(this.makeResult(src,res));
-			$('#heading-defs').css('display','block');
+		image: function (src,res) {
+			var $res = makeResult(src,res);
+			$images = $('#image .result');
+			if ($images.length == 0) {
+				$('#heading-'+res.type).add('#'+res.type).css('display','block');
+				$('#image').append($res);
+			} else {
+				$images.eq((Math.random()*$images.length)|0).after($res);
+			}
 		},
 		data: function(src,res) {
-			$('#heading-data').css('display','block');
+			$('#heading-data, #data').css('display','block');
 			if (!$('#data-'+src.id).length) {
 				$('#data').append(
 					'<div id="data-'+src.id+'" class="datasource">'
@@ -69,7 +90,7 @@ var CLIENT = (function() {
 				+	'</div>'
 				);
 			}
-			$('#data-'+src.id+' > .scroll').append(this.makeResult(src,res));
+			$('#data-'+src.id+' > .scroll').append(makeResult(src,res));
 		}
 	}
 	
@@ -87,17 +108,19 @@ var CLIENT = (function() {
 	function addResult(src,res) {
 		ret.types[res.type] = ret.types[res.type] || [];
 		ret.types[res.type].push(res);
-		ret.sources[res.source.id] = ret.sources[res.source.id] || [];
-		ret.sources[res.source].push(res);
-		
-		addResultByType[ res.type || '_' ]( src , res );
+		ret.sources[src.id] = ret.sources[src.id] || [];
+		ret.sources[src.id].push(res);
+		(addResultByType[ res.type ] || addResultByType._) ( src , res );
 	}
+	var haveSearched = false;
 	function setup () {
 		var socket = io.connect(location.host);
 		var q = gup('q');
 		$('#q').val(q);
 		socket.on('welcome', function (data) {
 			console && console.log('welcome!');
+			if (haveSearched) return;
+			haveSearched = true;
 			if (q) {
 				$('#q').addClass('spinner');
 			  	socket.emit('search', {

@@ -54,14 +54,14 @@ function loadConfig(opt) {
 function reconfigureFromWeb(res,name) {
 	try {
 		var msg = 'successfully configured from '+config.opt.file;
-		config.load(opt);
+		config.load({name:name});
 		console.log(msg); 
 		res.writeHead(200);
-		configure();
 		return res.end(msg);
 	} catch (e) {
 		var msg = 'configuration from '+config.opt.file+' rejected: '+e.message;
 		console.log(msg); 
+		console.log(e);
 		res.writeHead(500);
 		res.end(msg);
 	};
@@ -79,13 +79,13 @@ function configure (opt,data) {
 	// configure sources, fill in missing properties from the defaultSource
 	for (var i in data.sources) {
 		var srcData = data.sources[i];
-		var srcDef = data.defaultSource || {};
+		var srcDef = data.source_template || {};
 		var srcNew = {};
 		srcNew.id = i;
 		srcNew.name = srcData.name || i;
 		for (var j in srcDef) srcNew[j] = typeof(srcDef[j])=='string' ? srcDef[j].replace('{{{id}}}',i) : srcDef[j];
 		for (var j in srcData) srcNew[j] = srcData[j];
-		srcNew.show = {
+		srcNew.send = {
 			id: srcNew.id,
 			name: srcNew.name,
 			home: srcNew.home
@@ -112,13 +112,17 @@ var clientPaths = {
 		file: "client/jq.js",
 		type: "application/javascript"
 	},
-	"/kultura.js": {
-		file: "client/kultura-client.js",
+	"/client.js": {
+		file: "client/client.js",
 		type: "application/javascript"
 	},
-	"/kultura.css": {
-		file: "client/kultura.css",
+	"/client.css": {
+		file: "client/client.css",
 		type: "text/css"
+	},
+	"/robots.txt": {
+		file: "etc/robots.txt",
+		type: "text/plain"
 	}
 }
 
@@ -133,9 +137,6 @@ function onHttpRequest (req,res) {
 	if (u.pathname == '/' && u.query.conf) {
 		// ?conf=filename -> read configuration from etc/filename.conf.js
 		reconfigureFromWeb(res,u.query.conf);
-	} else if (u.pathname =='/') {
-		// send index.html
-		sendFile(res, 'static/index.html');
 	} else if (_this.paths[u.pathname] && _this.paths[u.pathname].file) {
 		// send other path
 		sendFile(res,_this.paths[u.pathname].file);
@@ -184,10 +185,15 @@ function onSocketConnected (socket) {
 		  			try {
 		  				console.log(data);
 						data = JSON.parse(data);
-						socket.emit('results',{
-							source: src,
-							results: data.results
-						});
+						var send = {
+							source: src.send,
+							results: []
+						}
+						for (var i in data.results) {
+							var res = data.results[i];
+							if (res.type && res.title && res.url) send.results.push(res);
+						}
+						socket.emit('results', send);
 					} catch (e) {}
 					// if done with all sources, inform client
 					if (--count==0) socket.emit('endresults');

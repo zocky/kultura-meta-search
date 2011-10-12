@@ -1,33 +1,33 @@
 
 body {
-	font-family:sans-serif;
-	font-size:12px;
+  font-family:sans-serif;
+  font-size:12px;
 }
 
 body, body * {
-   box-sizing:border-box;
-   -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
 }
 #sidebar {
-	position:absolute;
-	top:120px;
-	left:0px;
-	width:0px;
-	min-height:20px;
+  position:absolute;
+  top:120px;
+  left:0px;
+  width:0px;
+  min-height:20px;
 }
 #header {
-	position:absolute;
-	top:0px;
-	left:80px;
-	right:0;
-	height:40px;
-	padding:10px;
-	background:white;
-	text-align:left;
-	
+  position:absolute;
+  top:0px;
+  left:80px;
+  right:0;
+  height:40px;
+  padding:10px;
+  background:white;
+  text-align:left;
+  
 }
 #q {
-	width:80%;
+  width:80%;
 }
 #logo img {
   width:70px;
@@ -36,24 +36,38 @@ body, body * {
   left:10px;
 }
 #content {
-	position:absolute;
-        z-index:1;
-	top:48px;
-	left:0px;
-	right:0;
-	min-height:200px;
-	padding: 0 1em;
-	xborder-left:1px solid navy;
+  position:absolute;
+   z-index:1;
+  top:48px;
+  left:0px;
+  right:0;
+  min-height:200px;
+  padding: 0 1em;
+  xborder-left:1px solid navy;
 }
 .spinner {
-	background:url(http://services.ljudmila.net/static/ajax-loader.gif) 4px 4px no-repeat
+  background:url(http://services.ljudmila.net/static/ajax-loader.gif) 4px 4px no-repeat
 }
 a {
-	text-decoration:none;
+  text-decoration:none;
 }
 a:hover {
-	text-decoration:underline;
+  text-decoration:underline;
 }
+
+.heading {
+  font-size:12px;
+  clear:left;
+  border-top: dotted 1px navy;
+  box-shadow: 0 16px 8px #efefef inset;
+  display:none;
+}
+
+.box {
+  display:none;
+}
+
+
 .source { 
   display:inline;
   font-size:smaller;
@@ -62,14 +76,14 @@ a:hover {
   margin-right:0.25em;
 }
 .source a {
-	color:green;
+  color:green;
 }
 .title { 
   text-align:baseline;
   font-size:larger;
 }
 .description {
-	display:inline;
+  display:inline;
 }
 .result {
   margin:0.5em 0;
@@ -81,15 +95,15 @@ a:hover {
 clear:both;
 }
 #data .datasource {
-	margin:0.5em;
-	padding:0.5em 0;
-	border-radius:6px;
-	background:#eee;
-	float:left;
-	width:24em;
-	height:12em;
-	overflow:hidden;
-    box-shadow:0 0px 3px #ccc;
+  margin:0.5em;
+  padding:0.5em 0;
+  border-radius:6px;
+  background:#eee;
+  float:left;
+  width:24em;
+  height:12em;
+  overflow:hidden;
+  box-shadow:0 0px 3px #ccc;
 }
 #data .datasource > .source {
   font-weight:bold;
@@ -108,23 +122,23 @@ clear:both;
 }
 
 #data .result .title {
- font-size:12px;
- white-space:nowrap;
+  font-size:12px;
+  white-space:nowrap;
 }
 #data .result {
- display:none;
- margin-top:0;
- margin-bottom:0;
- line-height:120%;
- font-size:10px;
- padding:0.5em;
- background:white;
+  display:none;
+  margin-top:0;
+  margin-bottom:0;
+  line-height:120%;
+  font-size:10px;
+  padding:0.5em;
+  background:white;
 }
 #data .result .description {
-	display:none;
+  display:none;
 }
 #data .result .url {
-	display:none;
+  display:none;
 }
 
 #data .result:nth-child(1),
@@ -144,16 +158,16 @@ clear:both;
 }
 
 #data .result:nth-child(1) {
- height:5.5em;
+  height:5.5em;
 }
 #data .result .title { 
-	white-space:nowrap;
+  white-space:nowrap;
 }
 
 #data .result:nth-child(1) .title {
- font-size:13px;
- font-weight:bold;
- overflow:hidden;
+  font-size:13px;
+  font-weight:bold;
+  overflow:hidden;
 }
 #data .result:nth-child(1) img{
   height:4.5em;
@@ -162,31 +176,24 @@ clear:both;
 #data .result:nth-child(1) .description,
 #data .result:nth-child(2) .description,
 #data .result:nth-child(3) .description {
-	display:block;
+  display:block;
 }
 #data .result:nth-child(2) .description,
 #data .result:nth-child(3) .description {
-	display:block;
-	white-space:nowrap;
+  display:block;
+  white-space:nowrap;
 }
 
 #data .result:nth-child(1) .url {
-	display:none;
-	white-space:nowrap;
-}
-#defs .title, #defs .url {
- font-size:12px;
- display:inline;
- margin-right:0.5em
-}
-.heading {
-font-size:12px;
-clear:left;
-border-top: dotted 1px navy;
-  box-shadow: 0 16px 8px #efefef inset;
   display:none;
+  white-space:nowrap;
 }
-#images {
+#def .title, #def .url {
+  font-size:12px;
+  display:inline;
+  margin-right:0.5em
+}
+#image {
   height:90px;
   overflow:hidden;
 }
