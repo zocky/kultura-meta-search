@@ -2,45 +2,52 @@
 <html> 
 	<head> 
 		<title>Kulturec</title> 
-	    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+	   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 		<script src="http://services.ljudmila.net/static/jq/jquery.mousewheel.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/client.js"></script>
 	    <link  href="/client.css" rel="stylesheet" type="text/css" /> 
 	</head>
-	<body>
-		<div id="logo"><img src="http://services.ljudmila.net/static/culture.si.png" title="culture.si logo. (c) ljudmila.org. All rights reserved."></div>
-		<div id="header">
-			<form action="?">
-				<input id="q" name="q">
-				<input id="submit" type="submit" value="&gt;&gt;">
-			</form>
+	<body class="list">
+		<div id="main-wrap">
+			<div id="main">
+				<header id="header">
+					<div id="logo"><span class="logo-main">Kulturnik</span><span class="logo-sub">stroj za kulturo</span></div>
+					<form action="?">
+						<input id="q" name="q">
+						<input id="submit" type="submit" value="&gt;&gt;">
+					</form>
+					<h1></h1>
+				</header>
+				<div id="content">
+					<div id="images-wrap" class="box-wrap">
+						<header id="images-header" class="box-header">
+							<h2>slike</h2>
+							<nav></nav>
+						</header>
+						<div id="images-scroll" class="box-scroll">
+							<div id="images" class="box"></div>
+						</div>
+					</div>
+					<div id="results-wrap" class="box-wrap">
+						<header id="results-header" class="box-header">
+							<h2>viri</h2>
+							<nav></nav>
+						</header>
+						<div id="results-scroll" class="box-scroll">
+							<div id="results" class="box"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<footer id="footer">
+				<div class="copyleft">mi.tko & user:zocky@wiki.ljudmila.net</div>
+			</footer>
 		</div>
-		<div id="separator">
-		</div>
-		<div id="content">
-			<div class="heading" id="heading-def">def</div>
-			<div id="def" class="box"></div>
-			<div class="heading" id="heading-events">event</div>
-			<div id="event" class="box"></div>
-			<div class="heading" id="heading-news">news</div>
-			<div id="news" class="box"></div>
-			<div class="heading" id="heading-news">contacts</div>
-			<div id="contacts" class="box"></div>
-			<div class="heading" id="heading-image">image</div>
-			<div id="image-wrap">
-				<div id="image" class="box"></div>
-			</div>
-			<div class="heading" id="heading-data">data</div>
-			<div id="data-wrap">
-				<div id="data" class="box"></div>
-			</div>
-			<div class="heading" id="heading-web">web</div>
-			<div id="web" class="box"></div>
-			<div id="detail-wrap">
-				<iframe id="detail" name="detail" frameBorder="0"></iframe>
-			</div>
+		<div id="detail-wrap">
+			<iframe id="detail" name="detail" frameBorder="0"></iframe>
 		</div>
 	</body>
+
 </html>

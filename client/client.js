@@ -13,26 +13,23 @@
 	},
 	results: [{	
 		url, 
-		title, 
+		name, 
 		description, 
 		image 
 	}, ... ]
 }
 */
 
-jQuery.jQueryRandom = 0;
-jQuery.extend(jQuery.expr[":"],
-{
-    random: function(a, i, m, r) {
-        if (i == 0) {
-            jQuery.jQueryRandom = Math.floor(Math.random() * r.length);
-        };
-        return i == jQuery.jQueryRandom;
-    }
-});
-
 var CLIENT = (function() {
-    var $selectedClone=$('<div></div>');
+	var ret = {
+		q: '',
+		socket: null,
+		types: {},
+		sources: {}
+	};
+   var $selectedClone=$('<div></div>');
+	var $body;
+   
 	function urlencode (str) {
 		str = (str + '').toString();
 		return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
@@ -44,31 +41,45 @@ var CLIENT = (function() {
 	function gup (name) {
 		name = name.replace('[','\\[').replace(']','\\]');
 		var regex = new RegExp('[\\?&]'+name+'=([^&#]*)(&|$)');
-		var results = regex.exec( window.location.href );
+		var results = regex.exec( window.location.href.replace(/#.*$/,''));
 		return results === null ? '' : urldecode(results[1]);
 	}
 	function shorten(str,len) {
 		str = str || '';
 		return str.length>len ? str.substr(0,len-1)+'…' : str;
 	}
-	var $selected;
-	var $selectedClone;
-	var go = function (e) {
-		var $body = $('body');
-		var $this = $(this);
-		$('.result.selected').removeClass('selected');
-		$selectedClone.remove();
-		var $res = $this.closest('.result');
-		$res.addClass('selected');
-		$selectedClone = $res
-		.clone()
-		.css({
-			display:'none',
-			position:'fixed',
-			left:'0',
-			zIndex:5,
+
+	function switchToList() {
+		$body.removeClass('initial detail');
+		$body.addClass('list');
+		$selectedClone && $selectedClone.hide();
+		/*
+		$('body').addClass('columns to-detail');
+		var $sel = $('.selected');
+		var l = $sel.offset().left;
+		var $cont = $('#data-wrap');
+		$cont.get(0).scrollLeft = l - $cont.width()/2 + 125;
+		var l = $sel.offset().left;
+		console.log($sel);
+		$cont.css({
+			left: 20-l
+		}).animate({
+			left: 0
+		},600);
+		$('#detail-wrap').animate({
+			opacity:0,
+			left: 2000,
+		},function() {
+			$('body').removeClass('to-detail');
 		})
-		.appendTo('#data');
+		*/
+	}
+
+	function switchToDetail() {
+		$body.removeClass('initial list');
+		$body.addClass('detail');
+
+		/*
 		if ($body.hasClass('columns')) {
 			var $cont = $('#data-wrap');
 			var o = $this.offset();
@@ -91,78 +102,119 @@ var CLIENT = (function() {
 				$cont.get(0).scrollTop = $this.get(0).offsetTop - t;
 			});
 		}
+		*/
 	}
 
+	var $selected;
+	var $selectedClone;
+	
+	function select($res) {
+		$selected.removeClass('selected');
+		$res.addClass('selected');
+		$selected = $res;
+		/*
+		$selectedClone.remove();
+		$selectedClone = $res
+		.clone()
+		.css({
+			display:'none',
+			position:'fixed',
+			left:'0',
+			zIndex:5,
+		})
+		.appendTo('#data');
+		*/
+	}
+	function fixSelection() {
+		/*
+		var o = $('.result.selected').offset();
+ 		var t = $('#data-wrap').offset().top;
+ 		if (o && o.top < t) {
+    		console.log($selectedClone);
+ 			$selectedClone.css({
+ 				display:'block',
+ 				top: t-5,
+ 				left:20,
+ 				bottom: 'auto',
+ 				height: 'auto',
+ 			})
+ 		} else if (o && o.top + $('.result.selected').height() > $('#data-wrap').height()+t) {
+ 			$selectedClone.css({
+ 				display:'block',
+ 				top: 'auto',
+ 				left: 20,
+ 				bottom: '0',
+ 				height: 'auto',
+ 			})
+ 		} else {
+ 			$selectedClone.css({
+ 				display:'none',
+ 			})
+ 		}
+ 		*/
+	}
+	var go = function (e) {
+		var $this = $(this);
+		var $res = $this.closest('.result');
+		select($res);
+		if ($body.hasClass('list')) switchToDetail();
+	}
 
-	function makeResult (src, res, search) {
-		var title = shorten(res.title,60);
+	function addSource(src,search) {
+		$('#results-header nav').append(' <a class="jumpToSource" href="#datasource-'+src.id+'">'+src.name+'</a> ');
+		return $(
+			'<section id="datasource-'+src.id+'" class="datasource">'
+		+  	'<header class="datasource-header">'
+		+			'<h2>'
+		+				'<a class="datasource-url" target="detail" href="'+search+'" title="Rezultati na: '+src.name+'">'
+		+					'<img class="datasource-icon" src="'+src.home+'/favicon.ico" alt="'+src.name+'" onerror="$(this).remove()">' //TODO: get correct favicon from scraper!
+		+				'</a>'
+		+				'<a class="datasource-searchurl" target="detail" href="'+search+'" title="Rezultati na: '+src.name+'">'+src.name+'</a>'
+		+			'</h2>'
+		+		'</header>'
+		+	'</section>'
+		)
+		.appendTo('#results');
+	}
+	function addResult(src,res,search) {
+		var name = shorten(res.name||res.title,60); //TODO: fix scrapers to return name, NOT title
 		var description = shorten(res.description,100);
-		var $res =  $(
-			'<div data-source="'+src.id+'"class="result '+res.type+'">'
-		+		'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
-		+	(res.image ? '<a target="detail" href="'+res.url+'"><img onerror="$(this).remove()" class="image" title="'+res.title+'" src="'+res.image+'"></a>' : '')
-		+		'<div class="title"><a target="detail" href="'+res.url+'" title="'+res.title+'">'+title+'</a></div>'
-		+		'<div class="description" title="'+res.description+'">'+description+'</a></div>'
-		+		'<div class="url"><a href="'+res.url+'">'+res.url+'</a></div>'
+		
+		var properties = '';//TODO: add semantic properties
+		
+		var $res = $(
+			'<div class="result '+res.type+'">'
+		+		'<figure>'
+		+	(res.image ? '<a class="image" target="detail" href="'+res.url+'"><img onerror="$(this).remove()" alt="'+res.name+'" src="'+res.image+'"></a>' : '')
+		+		'</figure>'
+		+		'<header>'
+		+			'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
+		+			'<div class="type">'+res.type+'</div>'
+		+			'<h3 class="name"><a target="detail" href="'+res.url+'">'+name+'</a></h3>'
+		+		'</header>'
+		+		'<content>'
+		+	(res.description ? '<div class="description" name="'+res.description+'">'+description+'</a></div>' : '')
+		+		properties
+		+		'</content>'
+		+		'<footer>'
+		+			'<div class="url"><a href="'+res.url+'">'+res.url+'</a></div>'
+		+		'</footer>'
 		+	'</div>'
 		);
 		$res.find('a[target=detail]').click(go);
-		return $res;
-	}
-	var addResultByType = {
-		_: function (src,res,search) {
-			var $res = makeResult(src,res);
-			$('#'+res.type).append($res);
-			$('#heading-'+res.type).add('#'+res.type).css('display','block');
-			return $res;
-		},
-		image: function (src,res,search) {
-			var $res = makeResult(src,res,search);
-			$images = $('#image .result');
-			if ($images.length == 0) {
-				$('#heading-'+res.type).add('#'+res.type).css('display','block');
-				$('#image').append($res);
-			} else {
-				$images.eq((Math.random()*$images.length)|0).after($res);
-			}
-		},
-		data: function(src,res,search) {
-			$('#heading-data, #data').css('display','block');
-			if (!$('#data-'+src.id).length) {
-				$('#data').append(
-					'<div id="data-'+src.id+'" class="datasource">'
-				+   '<div class="datasource-head">'
-				+		'<div class="source"><img src="'+src.home+'/favicon.ico" onerror="$(this).remove()"><a target="detail" href="'+search+'">'+src.name+'</a>'
-				+		'</div>'
-				+	'</div>'
-				+	'</div>'
-				);
-				$('#data-'+src.id+' > .datasource-head').append(makeResult(src,res,search));
-			} else $('#data-'+src.id).append(makeResult(src,res,search));
+		
+		var $datasource = $('#datasource-'+src.id);
+		if ($datasource.length == 0) {
+			$datasource = addSource(src,search);
+			$datasource.find('.datasource-header').append($res);
+		} else {
+			$datasource.append($res);
 		}
-	}
-	
-
-	// TODO: facetted filtering of results
-	// option 1: implement hashing of results by type and source
-	// option 2: encode this information in DOM and use CSS/whatever to filter results
-	
-	var ret = {
-		q: '',
-		socket: null,
-		types: {},
-		sources: {}
-	};
-	function addResult(src,res,search) {
-		ret.types[res.type] = ret.types[res.type] || [];
-		ret.types[res.type].push(res);
-		ret.sources[src.id] = ret.sources[src.id] || [];
-		ret.sources[src.id].push(res);
-		(addResultByType[ res.type ] || addResultByType._) ( src , res , search );
 	}
 	var haveSearched = false;
 	function setup () {
-		$('body').addClass('columns');
+    	$body = $('body');
+		$('body').addClass('initial');
 		var socket = io.connect(location.host);
 		var q = gup('q');
 		$('#q').val(q);
@@ -170,6 +222,7 @@ var CLIENT = (function() {
 			console && console.log('welcome!');
 			if (haveSearched) return;
 			haveSearched = true;
+			switchToList();
 			if (q) {
 				$('#q').addClass('spinner');
 			  	socket.emit('search', {
@@ -188,67 +241,21 @@ var CLIENT = (function() {
 		ret.q = q;
 		ret.socket = socket;
 		
-	    $('#image-wrap')
-        .bind('mousewheel', function(event, delta) {
-        	this.scrollLeft -= delta * 120;
-        })
+	   $('#images-scroll')
+      	.bind('mousewheel', function(event, delta) {
+      	this.scrollLeft -= delta * 120;
+      })
         //TODO: set this on view mode change, avoid checking class on each mouse wheel event
-	    $('#data-wrap').bind('mousewheel',function(e,delta) {
-	    	var $body = $('body');
+	   $('#results-scroll').bind('mousewheel',function(e,delta) {
 	    	e.preventDefault();
-	    	if($body.hasClass('columns')) {
-	    		this.scrollLeft -= delta * 120;
-	    	} else {
-	    		this.scrollTop -= delta * 60;
-	    		var $this = $(this);
-	    		var o = $('.result.selected').offset();
-	    		var t = $('#data-wrap').offset().top;
-	    		if (o && o.top < t) {
-		    		console.log($selectedClone);
-	    			$selectedClone.css({
-	    				display:'block',
-	    				top: t-5,
-	    				left:20,
-	    				bottom: 'auto',
-	    				height: 'auto',
-	    			})
-	    		} else if (o && o.top + $('.result.selected').height() > $('#data-wrap').height()+t) {
-	    			$selectedClone.css({
-	    				display:'block',
-	    				top: 'auto',
-	    				left: 20,
-	    				bottom: '0',
-	    				height: 'auto',
-	    			})
-	    		} else {
-	    			$selectedClone.css({
-	    				display:'none',
-	    			})
-	    		}
-	    	}
-	    });
+    		this.scrollLeft -= delta * 120;
+    		this.scrollTop -= delta * 60;
+    		fixSelection();
+	   });
 		$('#submit').click(function(e) {
 			if($('#q').val()==gup('q')) {
 				e.preventDefault();
-				$selectedClone && $selectedClone.hide();
-				$('body').addClass('columns to-detail');
-				var $sel = $('.selected');
-				var l = $sel.offset().left;
-				var $cont = $('#data-wrap');
-				$cont.get(0).scrollLeft = l - $cont.width()/2 + 125;
-				var l = $sel.offset().left;
-				console.log($sel);
-				$cont.css({
-					left: 20-l
-				}).animate({
-					left: 0
-				},600);
-				$('#detail-wrap').animate({
-					opacity:0,
-					left: 2000,
-				},function() {
-					$('body').removeClass('to-detail');
-				})
+				switchToList();
 			}
 		});
 	}

@@ -140,6 +140,8 @@ function onHttpRequest (req,res) {
 	} else if (_this.paths[u.pathname] && _this.paths[u.pathname].file) {
 		// send other path
 		sendFile(res,_this.paths[u.pathname].file);
+	} else if (u.pathname.match(/^[/](fonts|css)[/]/)) {
+		sendFile(res,'client/' + u.pathname);
 	} else {
 		res.writeHead(404);
 		res.end('No such such.');
