@@ -1,0 +1,39 @@
+/* main.css overrides */
+#header {
+  height:40px;/*header.height*/
+}
+#footer {
+  height: 20px;/*footer.height*/
+}
+/* content.css overrides */ 
+#content {
+  top:40px;/*header.height*/
+  bottom:20px;/*footer.height*/
+}
+.box-header {
+  height:20px;/*box-header-height*/
+}
+.box-scroll {
+  top:20px;/*box-header.height*/
+}
+#image-wrap {
+  height:100px;/*images-box.height*/
+}
+#results-wrap {
+  top:100px;/*images-box.height*/
+}
+#results {
+ width:240px;/*results.column-width*/
+}
+body.list #results {
+  -moz-column-width:240px;/*results.column-width*/
+  -webkit-column-width:240px;/*results.column-width*/
+}
+/* results.css overrides */
+#results .result {
+  width:220px;/*result.width*/
+}
+#results .datasource-header {
+  width:220px;/*result.width*/
+}
+

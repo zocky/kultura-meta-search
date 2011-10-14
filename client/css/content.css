@@ -1,0 +1,47 @@
+
+/* C O N T E N T */
+/* boxen */
+.box-wrap {
+  position:absolute;
+  left: 0;
+  right:0;
+}
+.box-header {
+  height:20px;/*box-header_height*/
+}
+.box-scroll {
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  display:inline-block;
+  height:100%;
+  overflow:auto;
+  top:20px;/*box-header_height*/
+}
+.box {
+  height:100%;
+}
+
+/* images */
+#images-wrap {
+  top:0;
+  height:100px;/*images-box_height*/;
+}
+
+/* results */
+#results-wrap {
+  top:100px;/*images-box_height*/;
+  bottom:0;
+}
+
+#results {
+  width:250px;/*results_column-width*/
+}
+
+body.list #results {
+  -moz-column-width:250px;/*results_column-width*/
+  -webkit-column-width:250px;/*results_column-width*/
+  -moz-column-gap:0px;
+  -webkit-column-gap:0px;
+}

@@ -1,0 +1,24 @@
+/* results.css overrides */
+
+/* R E S U L T S */
+#results {
+  padding:10px 0;
+}
+#results .datasource {
+  clear:both;
+  padding:0px 10px;
+}
+
+#results .datasource-header {
+  display:inline-block;
+  width:220px;/*results.column-width*/
+}
+
+/* R E S U L T */
+#results .result {
+  clear:both;
+  display:inline-block;
+  width:220px;/*results.column-width*/
+}
+
+

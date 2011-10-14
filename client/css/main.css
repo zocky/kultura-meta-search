@@ -1,0 +1,43 @@
+#main-wrap {
+  position:absolute;
+  left:0; width:250px;
+  top:0; bottom:0;
+  overflow:auto;
+  background:red;
+  width:100%;
+}
+body.main-detail #main-wrap {
+  width:250px;
+}
+
+#header {
+  position:absolute;
+  background:#ace;
+  left:0;
+  right:0;
+  top:0;
+  height:60px;/*header_height*/
+  overflow:hidden;
+}
+
+#content {
+  position:absolute;
+  background:white;
+  left:0;
+  right:0;
+  bottom:30px;/*footer_height*/
+  top:60px;/*header_height*/
+  overflow:hidden;
+}
+
+#footer {
+  position:absolute;
+  background:#eee;
+  border-top:solid #ccc 1px;
+  left:0;
+  right:0;
+  bottom:0px;
+  height:30px;/*footer_height*/
+  overflow:hidden;
+}
+

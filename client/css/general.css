@@ -1,0 +1,32 @@
+* {
+  padding:0;
+  margin:0;
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}
+a {
+  color:#002FA1;
+  text-decoration:none;
+}
+a:hover {
+  text-decoration:underline;
+}
+body {
+  font-family: 'Plain';
+  font-size:9px;
+  background:#ccc;
+}
+h1, h2 {
+  font-family: 'Heading';
+  text-transform: uppercase;
+}
+h1 {
+  font-size:150%;
+}
+h2 {
+  font-size:150%;
+}
+h3 {
+  font-size:110%;
+}
+
