@@ -32,6 +32,7 @@ jQuery.extend(jQuery.expr[":"],
 });
 
 var CLIENT = (function() {
+    var $selectedClone=$('<div></div>');
 	function urlencode (str) {
 		str = (str + '').toString();
 		return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
@@ -50,18 +51,63 @@ var CLIENT = (function() {
 		str = str || '';
 		return str.length>len ? str.substr(0,len-1)+'…' : str;
 	}
+	var $selected;
+	var $selectedClone;
+	var go = function (e) {
+		var $body = $('body');
+		var $this = $(this);
+		$('.result.selected').removeClass('selected');
+		$selectedClone.remove();
+		var $res = $this.closest('.result');
+		$res.addClass('selected');
+		$selectedClone = $res
+		.clone()
+		.css({
+			display:'none',
+			position:'fixed',
+			left:'0',
+			zIndex:5,
+		})
+		.appendTo('#data');
+		if ($body.hasClass('columns')) {
+			var $cont = $('#data-wrap');
+			var o = $this.offset();
+			var t = o.top-$cont.offset().top;
+			$body.addClass('to-detail');
+			$('#detail-wrap').css({
+				left:o.left+250,
+				opacity:0,
+				zIndex:10,
+			}).animate({
+				left:250,
+				opacity:1,
+			},600);
+			$('#data').animate({
+				left: -o.left+20
+			},600,function() {
+				$('#data').css({left:0});
+				$body.removeClass('columns to-detail');
+				$body.addClass('detail');
+				$cont.get(0).scrollTop = $this.get(0).offsetTop - t;
+			});
+		}
+	}
+
+
 	function makeResult (src, res, search) {
-		var title = shorten(res.title,40- (res.image ? 5 : 0));
-		var description = shorten(res.description,200);
-		return $(
+		var title = shorten(res.title,60);
+		var description = shorten(res.description,100);
+		var $res =  $(
 			'<div data-source="'+src.id+'"class="result '+res.type+'">'
 		+		'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
-		+	(res.image ? '<a href="'+res.url+'"><img class="image" title="'+res.title+'" src="'+res.image+'"></a>' : '')
-		+		'<div class="title"><a href="'+res.url+'" title="'+res.title+'">'+title+'</a></div>'
+		+	(res.image ? '<a target="detail" href="'+res.url+'"><img onerror="$(this).remove()" class="image" title="'+res.title+'" src="'+res.image+'"></a>' : '')
+		+		'<div class="title"><a target="detail" href="'+res.url+'" title="'+res.title+'">'+title+'</a></div>'
 		+		'<div class="description" title="'+res.description+'">'+description+'</a></div>'
 		+		'<div class="url"><a href="'+res.url+'">'+res.url+'</a></div>'
 		+	'</div>'
 		);
+		$res.find('a[target=detail]').click(go);
+		return $res;
 	}
 	var addResultByType = {
 		_: function (src,res,search) {
@@ -85,13 +131,14 @@ var CLIENT = (function() {
 			if (!$('#data-'+src.id).length) {
 				$('#data').append(
 					'<div id="data-'+src.id+'" class="datasource">'
-				+		'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
-				+		'<div class="more"><a href="'+search+'">more</a></div>'
-				+		'<div class="scroll"></div>'
+				+   '<div class="datasource-head">'
+				+		'<div class="source"><img src="'+src.home+'/favicon.ico" onerror="$(this).remove()"><a target="detail" href="'+search+'">'+src.name+'</a>'
+				+		'</div>'
+				+	'</div>'
 				+	'</div>'
 				);
-			}
-			$('#data-'+src.id+' > .scroll').append(makeResult(src,res,search));
+				$('#data-'+src.id+' > .datasource-head').append(makeResult(src,res,search));
+			} else $('#data-'+src.id).append(makeResult(src,res,search));
 		}
 	}
 	
@@ -115,6 +162,7 @@ var CLIENT = (function() {
 	}
 	var haveSearched = false;
 	function setup () {
+		$('body').addClass('columns');
 		var socket = io.connect(location.host);
 		var q = gup('q');
 		$('#q').val(q);
@@ -139,7 +187,71 @@ var CLIENT = (function() {
 		});
 		ret.q = q;
 		ret.socket = socket;
-	}	
+		
+	    $('#image-wrap')
+        .bind('mousewheel', function(event, delta) {
+        	this.scrollLeft -= delta * 120;
+        })
+        //TODO: set this on view mode change, avoid checking class on each mouse wheel event
+	    $('#data-wrap').bind('mousewheel',function(e,delta) {
+	    	var $body = $('body');
+	    	e.preventDefault();
+	    	if($body.hasClass('columns')) {
+	    		this.scrollLeft -= delta * 120;
+	    	} else {
+	    		this.scrollTop -= delta * 60;
+	    		var $this = $(this);
+	    		var o = $('.result.selected').offset();
+	    		var t = $('#data-wrap').offset().top;
+	    		if (o && o.top < t) {
+		    		console.log($selectedClone);
+	    			$selectedClone.css({
+	    				display:'block',
+	    				top: t-5,
+	    				left:20,
+	    				bottom: 'auto',
+	    				height: 'auto',
+	    			})
+	    		} else if (o && o.top + $('.result.selected').height() > $('#data-wrap').height()+t) {
+	    			$selectedClone.css({
+	    				display:'block',
+	    				top: 'auto',
+	    				left: 20,
+	    				bottom: '0',
+	    				height: 'auto',
+	    			})
+	    		} else {
+	    			$selectedClone.css({
+	    				display:'none',
+	    			})
+	    		}
+	    	}
+	    });
+		$('#submit').click(function(e) {
+			if($('#q').val()==gup('q')) {
+				e.preventDefault();
+				$selectedClone && $selectedClone.hide();
+				$('body').addClass('columns to-detail');
+				var $sel = $('.selected');
+				var l = $sel.offset().left;
+				var $cont = $('#data-wrap');
+				$cont.get(0).scrollLeft = l - $cont.width()/2 + 125;
+				var l = $sel.offset().left;
+				console.log($sel);
+				$cont.css({
+					left: 20-l
+				}).animate({
+					left: 0
+				},600);
+				$('#detail-wrap').animate({
+					opacity:0,
+					left: 2000,
+				},function() {
+					$('body').removeClass('to-detail');
+				})
+			}
+		});
+	}
 	$(setup);
 	return ret;
 })();

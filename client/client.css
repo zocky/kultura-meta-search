@@ -101,7 +101,7 @@ clear:both;
   background:#eee;
   float:left;
   width:24em;
-  height:12em;
+  height:32em;
   overflow:hidden;
   position:relative;
   box-shadow:0 0px 3px #ccc;
@@ -127,7 +127,8 @@ clear:both;
   white-space:nowrap;
 }
 #data .result {
-  display:none;
+  clear:left;
+  display:block;
   margin-top:0;
   margin-bottom:0;
   line-height:120%;
@@ -136,7 +137,6 @@ clear:both;
   background:white;
 }
 #data .result .description {
-  display:none;
 }
 #data .result .url {
   display:none;
@@ -173,14 +173,16 @@ clear:both;
 #data .result:nth-child(1) img{
   height:4.5em;
 }
+#data .result:nth-child(1) .description {
+  white-space:normal;
+}
 
 #data .result:nth-child(1) .description,
 #data .result:nth-child(2) .description,
 #data .result:nth-child(3) .description {
   display:block;
 }
-#data .result:nth-child(2) .description,
-#data .result:nth-child(3) .description {
+#data .result .description {
   display:block;
   white-space:nowrap;
 }
