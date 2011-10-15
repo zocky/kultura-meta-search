@@ -1,51 +1,64 @@
+/* 
+	CUSTOMIZERS: 
+	leave this file alone, use overrides.css and styles.css instead
+	
+	DEVELOPERS:
+	top-level layout goes in this file. 
+	make sure to copy all customizable values to overrides.css
+*/
+
 #main-wrap {
   position:absolute;
-  left:0;
-  top:0; 
-  bottom:0;
+  left:0; width:100%;
+  top:0;  bottom:0;
   background:red;
   z-index:1;
+  
   -webkit-transition-property: width;
   -webkit-transition-duration: 0.5s;
   -moz-transition: width 0.5s linear;
   transition: width 0.5s linear;
 }
-
-body.mode-list #main-wrap {
-  width:100%;
-}	
 body.mode-detail #main-wrap {
   width:240px;/*results.column-width*/
 }
+
 #header {
   position:absolute;
   background:#ace;
-  left:0;
+  left:0;   
   right:0;
   top:0;
   overflow:hidden;
 }
-body.mode-detail #header {
-  height:30px;/*header-detail.height*/
+body.mode-initial #header {
+  height:60px;/*header-initial.height*/
 }
 body.mode-list #header {
   height:40px;/*header.height*/
 }
+body.mode-detail #header {
+  height:30px;/*header-detail.height*/
+}
+
 
 #content {
   position:absolute;
   background:white;
   left:0;
   right:0;
-  bottom:20px;/*footer.height*/
+  bottom:20px;
   z-index:1;
 }
 
-body.mode-detail #content {
-  top:30px;/*header-detail.height*/
+body.mode-initial #content {
+  display:none;
 }
 body.mode-list #content {
   top:40px;/*header.height*/
+}
+body.mode-detail #content {
+  top:30px;/*header-detail.height*/
 }
 
 
@@ -100,3 +113,9 @@ body.mode-list #detail-wrap {
 #spinner.loading {
   display:block;
 }
+
+body.mode-initial {
+   margin:10em 10em;
+}
+
+

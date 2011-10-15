@@ -1,3 +1,14 @@
+/* 
+	CUSTOMIZERS: 
+	override positioning settings here. make sure to keep values with same tags synchronized.
+	
+
+	DEVELOPERS:
+	only positioning overrides for other .css files go in this file.
+	make sure to include everything that can be overrided
+	and to tag values that need to be kept synchronized with the same tag
+*/
+
 /* main.css overrides */
 body.mode-detail #header {
   height:25px;/*header-detail.height*/

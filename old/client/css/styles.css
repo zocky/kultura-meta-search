@@ -1,16 +1,13 @@
 /* 
 client.css 
 
-only overrides, as well as colors, text formatting and similar go in this file
-
+	CUSTOMIZERS: 
+	customize colors, text formatting and similar in this file
+	
+	DEVELOPERS:
+	don't put anything essential for the basic functioning of the layout in this file
+	
 */
-@import "/css/fonts.css";
-@import "/css/general.css";
-@import "/css/main.css";
-@import "/css/header.css";
-@import "/css/content.css";
-@import "/css/results.css";
-@import "/css/overrides.css";
 
 /* main.css customizations */ 
 #main-wrap {

@@ -3,7 +3,7 @@
 // GPL 3.0 applies
 // main loader
 
-var kultura = require('./core/server/server.js').init({
+var kultura = require('./src/server.js').init({
 /*  setting		default		*/
 //	port:		9701,
 //	confpath:	'etc/',

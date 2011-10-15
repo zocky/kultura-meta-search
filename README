@@ -1,0 +1,62 @@
+Kultura Meta Search by ljudmila.org
+(c) 2011 Zoran Obradović, Mitja Doma, Žiga Kranjec, Luka Frelih
+GPL 3.0 applies
+Version 0.2
+
+COMPONENTS:
+* APIDOC: a json schema for search engine results, using type and property names from schema.org
+* SCRAPE: a html/json search engine scraper which returns APIDOC compliant results
+* SERVER: the metasearch server
+** SEARCH: a socket.io server which collects results from SCRAPE servers or other APIDOC compliant sources and relays them to CLIENT
+** STATIC: a simple http server serving static files for CLIENT, and socket.io tunneling between CLIENT and SEARCH
+* CLIENT: the web browser client for querying and displaying results from SEARCH
+
+TREE:
+core/ - core server functionality
+core/server/ - metasearch server
+core/server/server.js - metasearch server module
+core/server/lib/ - libraries used by the metasearch server module
+core/client/ - the html/css/js client
+core/client/index.html - default client html, can be overriden in config
+core/client/js/ - client javascript
+core/client/js/client.js - main client javascript, loaded from 
+core/client/css/ - client css
+core/client/css/client - main client css file, loads other core css files and local/static/css/client.css
+local/ - local customizations
+local/etc/ - local configuration
+local/etc/default.conf.js.example -  example configuration file, should be customized and renamed to deafult.conf.js
+local/etc/default.conf.js - default configuration file, should not be checked into git
+local/static - files that will be served to http requests at /static/*
+local/static/css - local css
+local/static/css/client.css - main local style, loaded from core/client/css/client.css
+local/log/ - log files
+local/static/img - local static img files
+
+ROADMAP:
+0.1 - october 2011
+* SCRAPE: framework in php - DONE 
+* SEARCH: collect and relay searches in nodejs - DONE 
+* STATIC: serve 
+* CLIENT: list results - DONE
+
+0.5demo - december 2011
+* SCRAPE: framework in nodejs
+* SCRAPE: paging of results
+* SCRAPE: report semantic data
+* SCRAPE: mediawiki extension providing a compliant feed
+* SEARCH: paging of results
+* SEARCH: report semantic data
+* CLIENT: initial view
+* CLIENT: list view
+* CLIENT: image list view
+* CLIENT: detail view
+* CLIENT: display semantic data
+* CLIENT: group by semantic type
+* CLIENT: sort by semantic properties
+
+1.0a - june 2012
+* SCRAPE: search by semantic properties
+* SEARCH: search by semantic properties
+* CLIENT: search by semantic properties
+* CLIENT: grid view
+

@@ -165,7 +165,8 @@ var CLIENT = (function() {
 		var $res = $this.closest('.result');
 		select($res);
 		switchToDetail();
-		location.hash = $res.attr('id');
+		location.hash = $res.attr('id'); // - not workign in webkit
+		//location.href = location.href.replace('#.*','#'+$res.attr('id'));
 	}
 
 	function addSource(src,search,meta) {

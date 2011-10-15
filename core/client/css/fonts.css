@@ -1,0 +1,84 @@
+/*
+
+ background:url(http://services.ljudmila.net/static/ajax-loader.gif) right center no-repeat
+  green :#76B82A;
+  grey :#efefef;
+  selection color: #ace
+
+
+*/
+@font-face {
+  font-family: 'Heading';
+  src: url('/static/fonts/OpenSansExtraBold.ttf') format('truetype');
+  font-weight:bold;
+  font-style:normal;
+}
+@font-face {
+  font-family: 'Heading';
+  src: url('/static/fonts/OpenSansExtraBold.ttf') format('truetype');
+  font-weight:normal;
+  font-style:normal;
+}
+@font-face {
+  font-family: 'Heading';
+  src: url('/static/fonts/OpenSansExtraBoldItalic.ttf') format('truetype');
+  font-style:italic;
+  font-weight:normal;
+}
+@font-face {
+  font-family: 'Heading';
+  src: url('/static/fonts/OpenSansExtraBoldItalic.ttf') format('truetype');
+  font-style:italic;
+  font-weight:bold;
+}
+@font-face {
+    font-family: 'Plain';
+    src: url('/static/fonts/DejaVuSans.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'Plain';
+    src: url('/static/fonts/DejaVuSansOblique.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+
+}
+@font-face {
+    font-family: 'Plain';
+    src: url('/static/fonts/DejaVuSansBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Plain';
+    src: url('/static/fonts/DejaVuSansBoldOblique.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Narrow';
+    src: url('/static/fonts/DejaVuSansCondensed.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Narrow';
+    src: url('/static/fonts/DejaVuSansCondensedOblique.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Narrow';
+    src: url('/static/fonts/DejaVuSansCondensedBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Narrow';
+    src: url('/static/fonts/DejaVuSansCondensedBoldOblique.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
