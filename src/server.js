@@ -190,24 +190,35 @@ function onSocketConnected (socket) {
 						var send = {
 							source: src.send,
 							search: data.search,
-							results: []
+							results: [],
+							meta: data.meta || {}
 						}
 						for (var i in data.results) {
 							var res = data.results[i];
 							if (res.type && res.title && res.url) send.results.push(res);
 						}
 						socket.emit('results', send);
-					} catch (e) {}
+					} catch (e) {
+						socket.emit('error', {
+							source: src.id
+						});
+					}
 					// if done with all sources, inform client
 					if (--count==0) socket.emit('endresults');
 		  		} , function() {
 		  			// failed: clean up
 		  			console.log('failed lookup: '+id);
 					// if done with all sources, inform client
+					socket.emit('error', {
+						source: src.id
+					});
 					if (--count==0) socket.emit('endresults');
 		  		});
 		  	})(i, _this.sources[i]);
 		};
+		socket.emit('searchstarted',{
+			sourcecount: count
+		})
 	});
 	// tell the client we're ready
 	socket.emit('welcome', {protocol:'kultura',version:'0.1prealpha'});

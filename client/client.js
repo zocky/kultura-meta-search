@@ -50,9 +50,11 @@ var CLIENT = (function() {
 	}
 
 	function switchToList() {
-		$body.removeClass('initial detail');
-		$body.addClass('list');
+		if($body.hasClass('mode-list')) return;
+		$body.removeClass('mode-initial mode-detail');
+		$body.addClass('mode-list');
 		$selectedClone && $selectedClone.hide();
+		delete location.hash;
 		/*
 		$('body').addClass('columns to-detail');
 		var $sel = $('.selected');
@@ -76,8 +78,9 @@ var CLIENT = (function() {
 	}
 
 	function switchToDetail() {
-		$body.removeClass('initial list');
-		$body.addClass('detail');
+		if($body.hasClass('mode-detail')) return;
+		$body.removeClass('mode-initial mode-list');
+		$body.addClass('mode-detail');
 
 		/*
 		if ($body.hasClass('columns')) {
@@ -106,26 +109,29 @@ var CLIENT = (function() {
 	}
 
 	var $selected;
-	var $selectedClone;
+	var $selectedGhost;
 	
 	function select($res) {
-		$selected.removeClass('selected');
+		$selected && $selected.removeClass('selected');
 		$res.addClass('selected');
 		$selected = $res;
-		/*
-		$selectedClone.remove();
-		$selectedClone = $res
+		$selectedGhost && $selectedGhost.remove();
+		$selectedGhost = $res
 		.clone()
-		.css({
-			display:'none',
-			position:'fixed',
-			left:'0',
-			zIndex:5,
-		})
-		.appendTo('#data');
-		*/
+		.addClass('ghost')
+		.appendTo('#results-scroll');
 	}
 	function fixSelection() {
+		if ($selected) {
+			var $scroll = $('results-scroll')
+			var t = $selected.offset().top;
+			var b = t + $selected.height();
+	 		var T = $('#results-scroll').offset().top;
+	 		var B = T + $('#results-scroll').height();
+			if (t<T) $selectedGhost.removeClass('bottom').addClass('top');
+			else if (b > B) $selectedGhost.addClass('bottom').removeClass('top');
+			else $selectedGhost.removeClass('bottom').removeClass('top');
+		}
 		/*
 		var o = $('.result.selected').offset();
  		var t = $('#data-wrap').offset().top;
@@ -154,43 +160,46 @@ var CLIENT = (function() {
  		*/
 	}
 	var go = function (e) {
+		$('#spinner').addClass('loading');
 		var $this = $(this);
 		var $res = $this.closest('.result');
 		select($res);
-		if ($body.hasClass('list')) switchToDetail();
+		switchToDetail();
+		location.hash = $res.attr('id');
 	}
 
-	function addSource(src,search) {
+	function addSource(src,search,meta) {
 		$('#results-header nav').append(' <a class="jumpToSource" href="#datasource-'+src.id+'">'+src.name+'</a> ');
 		return $(
 			'<section id="datasource-'+src.id+'" class="datasource">'
 		+  	'<header class="datasource-header">'
-		+			'<h2>'
+		+			'<h3>'
 		+				'<a class="datasource-url" target="detail" href="'+search+'" title="Rezultati na: '+src.name+'">'
-		+					'<img class="datasource-icon" src="'+src.home+'/favicon.ico" alt="'+src.name+'" onerror="$(this).remove()">' //TODO: get correct favicon from scraper!
+		+					'<img class="datasource-icon" src="'+meta.shortcutIcon+'" alt="'+src.name+'" onerror="$(this).remove()">' //TODO: get correct favicon from scraper!
 		+				'</a>'
 		+				'<a class="datasource-searchurl" target="detail" href="'+search+'" title="Rezultati na: '+src.name+'">'+src.name+'</a>'
-		+			'</h2>'
+		+			'</h3>'
 		+		'</header>'
 		+	'</section>'
 		)
 		.appendTo('#results');
 	}
-	function addResult(src,res,search) {
+	function addResult(src,res,search,meta) {
 		var name = shorten(res.name||res.title,60); //TODO: fix scrapers to return name, NOT title
 		var description = shorten(res.description,100);
+		var id = (src.name+' '+name);
 		
 		var properties = '';//TODO: add semantic properties
 		
 		var $res = $(
-			'<div class="result '+res.type+'">'
+			'<div id="'+id+'" class="result '+res.type+'">'
 		+		'<figure>'
 		+	(res.image ? '<a class="image" target="detail" href="'+res.url+'"><img onerror="$(this).remove()" alt="'+res.name+'" src="'+res.image+'"></a>' : '')
 		+		'</figure>'
 		+		'<header>'
 		+			'<div class="source"><a href="'+src.home+'">'+src.name+'</a></div>'
 		+			'<div class="type">'+res.type+'</div>'
-		+			'<h3 class="name"><a target="detail" href="'+res.url+'">'+name+'</a></h3>'
+		+			'<h4 class="name"><a target="detail" href="'+res.url+'">'+name+'</a></h4>'
 		+		'</header>'
 		+		'<content>'
 		+	(res.description ? '<div class="description" name="'+res.description+'">'+description+'</a></div>' : '')
@@ -202,14 +211,20 @@ var CLIENT = (function() {
 		+	'</div>'
 		);
 		$res.find('a[target=detail]').click(go);
-		
-		var $datasource = $('#datasource-'+src.id);
-		if ($datasource.length == 0) {
-			$datasource = addSource(src,search);
-			$datasource.find('.datasource-header').append($res);
+		if (res.type == 'image') {
+			$('#images').append($res);
 		} else {
-			$datasource.append($res);
+			var $datasource = $('#datasource-'+src.id);
+			if ($datasource.length == 0) {
+				$datasource = addSource(src,search,meta);
+				$datasource.find('.datasource-header').append($res);
+			} else {
+				$datasource.append($res);
+			}
 		}
+	}
+	function fixProgress(n) {
+		$('#progress').css('width',Math.round(n*100)+'%');
 	}
 	var haveSearched = false;
 	function setup () {
@@ -218,6 +233,8 @@ var CLIENT = (function() {
 		var socket = io.connect(location.host);
 		var q = gup('q');
 		$('#q').val(q);
+		var total;
+		var progress;
 		socket.on('welcome', function (data) {
 			console && console.log('welcome!');
 			if (haveSearched) return;
@@ -228,15 +245,40 @@ var CLIENT = (function() {
 			  	socket.emit('search', {
 			  		q: q
 			  	});
+			  	total = 0;
+			  	progress = 0;
+				fixProgress(0);
 		  	}
 		});
+		socket.on('searchstarted', function (data) {
+			total = data.sourcecount+1;
+			progress ++;
+			fixProgress(progress/total);
+		});
+		function doAddResult(data,i) {
+			if (i>=data.results.length) return;
+			addResult(data.source,data.results[i],data.search,data.meta);
+			setTimeout(function() {
+				doAddResult(data,i+1);
+			},10);
+		}
 		socket.on('results', function (data) {
-			for (var i in data.results) {
-				addResult(data.source,data.results[i],data.search);
-			}
+			doAddResult(data,0);
+			progress ++;
+			fixProgress(progress/total);
+		});
+		socket.on('error', function (data) {
+			progress ++;
+			fixProgress(progress/total);
 		});
 		socket.on('endresults', function (data) {
 			$('#q').removeClass('spinner');
+			fixProgress(1);
+			progress = 0;
+			total = 0;
+			setTimeout( function() {
+				fixProgress(0)
+			}, 250);
 		});
 		ret.q = q;
 		ret.socket = socket;
@@ -246,9 +288,12 @@ var CLIENT = (function() {
       	this.scrollLeft -= delta * 120;
       })
         //TODO: set this on view mode change, avoid checking class on each mouse wheel event
-	   $('#results-scroll').bind('mousewheel',function(e,delta) {
+	   $('body.mode-list #results-scroll').live('mousewheel',function(e,delta) {
 	    	e.preventDefault();
     		this.scrollLeft -= delta * 120;
+	   });
+	   $('body.mode-detail #results-scroll').live('mousewheel',function(e,delta) {
+	    	e.preventDefault();
     		this.scrollTop -= delta * 60;
     		fixSelection();
 	   });

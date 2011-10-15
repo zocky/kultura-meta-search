@@ -14,19 +14,19 @@ a:hover {
 body {
   font-family: 'Plain';
   font-size:9px;
-  background:#ccc;
+  background:#eee;
 }
-h1, h2 {
+h1, h2, h3 {
   font-family: 'Heading';
   text-transform: uppercase;
 }
-h1 {
-  font-size:150%;
-}
 h2 {
-  font-size:150%;
+  font-size:120%;
 }
 h3 {
+  font-size:150%;
+}
+h4 {
   font-size:110%;
 }
 

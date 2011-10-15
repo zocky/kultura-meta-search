@@ -47,49 +47,38 @@
 }
 @font-face {
     font-family: 'Plain';
-    src: url('/fonts/DejaVuSansBold.woff') format ('woff');
+    src: url('/fonts/DejaVuSansBold.woff') format('woff');
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: 'Plain';
-    src: url('/fonts/DejaVuSansBoldOblique.woff') format ('woff');
+    src: url('/fonts/DejaVuSansBoldOblique.woff') format('woff');
     font-weight: bold;
     font-style: italic;
 }
 @font-face {
     font-family: 'Narrow';
-    src: url('/fonts/DejaVuSansCondensed.woff') format ('woff');
+    src: url('/fonts/DejaVuSansCondensed.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: 'Narrow';
-    src: url('/fonts/DejaVuSansCondensedOblique.woff') format ('woff');
+    src: url('/fonts/DejaVuSansCondensedOblique.woff') format('woff');
     font-weight: normal;
     font-style: italic;
 }
 @font-face {
     font-family: 'Narrow';
-    src: url('/fonts/DejaVuSansCondensedBold.woff') format ('woff');
+    src: url('/fonts/DejaVuSansCondensedBold.woff') format('woff');
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: 'Narrow';
-    src: url('/fonts/DejaVuSansCondensedBoldOblique.woff') format ('woff');
+    src: url('/fonts/DejaVuSansCondensedBoldOblique.woff') format('woff');
     font-weight: bold;
     font-style: italic;
 }
-@font-face {
-    font-family: 'Narrow';
-    src: url('/fonts/DejaVuSansCondensedBold.woff') format ('woff');
-    font-weight: bold;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Narrow';
-    src: url('/fonts/DejaVuSansCondensedBoldOblique.woff') format ('woff');
-    font-weight: bold;
-    font-style: italic;
-}
+

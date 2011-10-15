@@ -1,39 +1,96 @@
 /* main.css overrides */
-#header {
+body.mode-detail #header {
+  height:25px;/*header-detail.height*/
+  line-height:25px;/*header-detail.height*/
+}
+body.mode-list #header {
   height:40px;/*header.height*/
+  line-height:40px;/*header.height*/
 }
-#footer {
-  height: 20px;/*footer.height*/
+body.mode-detail #content {
+  top:25px;/*header-detail.height*/
 }
-/* content.css overrides */ 
-#content {
+body.mode-list #content {
   top:40px;/*header.height*/
+}
+#content {
   bottom:20px;/*footer.height*/
 }
+#footer {
+  height:20px;/*footer.height*/
+}
+
+/* header.css overrides */
+body.mode-detail #logo {
+  width:40px;/*logo-small.width*/
+}
+body.mode-list #logo {
+  width:120px;/*logo.width*/
+}
+body.mode-detail #q-wrap {
+  left:40px;/*logo-small.width*/
+  right:30px;/*submit-small.width*/
+}
+body.mode-list #q-wrap {
+  left:120px;/*logo.width*/
+  right:60px;/*submit.width*/
+}
+body.mode-detail #submit-wrap {
+  width:30px;/*submit-small.width*/
+}
+body.mode-list #submit-wrap {
+  width:60px;/*submit.width*/
+}
+/* content.css overrides */ 
 .box-header {
-  height:20px;/*box-header-height*/
+  height:15px;/*box-header.height*/
+  line-height:15px;/*box-header.height*/
 }
 .box-scroll {
-  top:20px;/*box-header.height*/
+  top:15px;/*box-header.height*/
 }
-#image-wrap {
-  height:100px;/*images-box.height*/
+#images-wrap {
+  height:100px;/*images.height*/;
+}
+body.mode-detail #images-wrap {
+  height:65px;/*images-detail.height*/;
 }
 #results-wrap {
-  top:100px;/*images-box.height*/
+  top:100px;/*images.height*/;
+}
+body.mode-detail #results-wrap {
+  top:65px;/*images-detail.height*/;
 }
 #results {
- width:240px;/*results.column-width*/
+  width:240px;/*results.column*/ /* should be results.width + 2* results.gap */
+  padding:10px 0;/*results.gap*/
 }
-body.list #results {
-  -moz-column-width:240px;/*results.column-width*/
-  -webkit-column-width:240px;/*results.column-width*/
+body.mode-detail #results {
+  width:220px;/*results.width*/
+}
+body.mode-list #results {
+  -moz-column-width:240px;/*results.column*/
+  -webkit-column-width:240px;/*results.column*/
 }
 /* results.css overrides */
-#results .result {
-  width:220px;/*result.width*/
+#results .datasource {
+  clear:both;
+}
+body.mode-list .datasource {
+  padding-right:10px;/*results.gap*/
+}
+body.mode-detail #results {
+  width:220px;/*results.width*/
 }
 #results .datasource-header {
-  width:220px;/*result.width*/
+  display:inline-block;
+  width:220px;/*results.width*/
 }
+#results .result {
+  width:220px;/*results.width*/
+}
+
+
+
+
 
