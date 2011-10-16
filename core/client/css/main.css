@@ -3,7 +3,7 @@
 	leave this file alone, use overrides.css and styles.css instead
 	
 	DEVELOPERS:
-	top-level layout goes in this file. 
+	top-level layout goes in this file. bells & whistles go to local/static/css
 	make sure to copy all customizable values to overrides.css
 */
 
@@ -11,14 +11,23 @@
   position:absolute;
   left:0; width:100%;
   top:0;  bottom:0;
-  background:red;
   z-index:1;
   
-  -webkit-transition-property: width;
-  -webkit-transition-duration: 0.5s;
-  -moz-transition: width 0.5s linear;
-  transition: width 0.5s linear;
 }
+body.mode-initial {
+ text-align:center;
+ background:white;
+}
+
+body.mode-initial #header {
+  position:relative;
+  display:inline-block;
+  margin-top:300px;
+  left:0; width:800px;
+  top:0;  height:80px;
+  z-index:1;
+}
+
 body.mode-detail #main-wrap {
   width:240px;/*results.column-width*/
 }
@@ -80,19 +89,14 @@ body.mode-detail #content {
   left:240px;/*results.column*/
   right:0;
   bottom:0;
-  background:white;
   z-index:0;
 }
 
 body.mode-detail #detail-wrap {
-	opacity:1;
-	display:block;
-	-webkit-transition:opacity 1s linear;
-	-moz-transition:opacity 1s linear;
-	transition:opacity 1s linear;
+  display:block;
 }
 body.mode-list #detail-wrap {
-  opacity:0;
+  display:none;
 }
 #spinner,
 #detail {
@@ -114,8 +118,6 @@ body.mode-list #detail-wrap {
   display:block;
 }
 
-body.mode-initial {
-   margin:10em 10em;
-}
+
 
 

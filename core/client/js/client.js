@@ -49,64 +49,72 @@ var CLIENT = (function() {
 		return str.length>len ? str.substr(0,len-1)+'…' : str;
 	}
 
-	function switchToList() {
+	function switchListToDetail() {
+		var d=300;
+		if($body.hasClass('mode-detail')) return;
+
+		var $cont = $('#results-wrap');
+		var $detail = $('#detail');
+		var $wrap =  $('#detail-wrap');
+		var scroll = $('#results-scroll').get(0);
+		var o = $selected.offset();
+		var l = o.left;
+
+		$wrap.css({display:'block',zIndex:10});
+		$detail.css({ left: l-10, background:'grey'});
+		setTimeout(function() {
+			$detail.animate({ left: 0 }, d, 'linear', function() {
+	  			$wrap.css({zIndex:0});
+			});
+			$cont.animate({	left: 10-l },d, 'linear', function() {
+				$cont.css({left:0});
+				// switch modes
+				$body.removeClass('mode-list');
+				$body.addClass('mode-detail');
+				scroll.scrollLeft = 0;
+				// restore selected result position
+				scroll.scrollTop += $selected.offset().top - o.top;
+				fixSelection();
+			});
+		},50);
+	}
+
+	function switchDetailToList() {
+		var d=500;
 		if($body.hasClass('mode-list')) return;
+
+		$selectedGhost && $selectedGhost.css('display','none');
 		$body.removeClass('mode-initial mode-detail');
 		$body.addClass('mode-list');
-		$selectedClone && $selectedClone.hide();
 		delete location.hash;
-		/*
-		$('body').addClass('columns to-detail');
-		var $sel = $('.selected');
-		var l = $sel.offset().left;
-		var $cont = $('#data-wrap');
-		$cont.get(0).scrollLeft = l - $cont.width()/2 + 125;
-		var l = $sel.offset().left;
-		console.log($sel);
-		$cont.css({
-			left: 20-l
-		}).animate({
-			left: 0
-		},600);
-		$('#detail-wrap').animate({
-			opacity:0,
-			left: 2000,
-		},function() {
-			$('body').removeClass('to-detail');
-		})
-		*/
+		if(!$selected) return;
+
+		var $cont = $('#results-wrap');
+		var scroll = $('#results-scroll').get(0);
+		var $detail = $('#detail');
+		var $wrap = $('#detail-wrap');
+		$wrap.css({	zIndex: 10,	display: 'block'});
+		var l = $selected.offset().left;
+		scroll.scrollLeft = l - $cont.width()/2 + 110;
+		var l = $selected.offset().left;
+		var L = scroll.scrollLeft;
+		$cont.css({	left: -l})
+		.animate({ left: 0 }, {
+			duration:d*l/$cont.width(),
+			easing: 'linear',
+		});
+		$detail.animate({
+			left: $cont.width()
+		},{
+			complete: function() {
+				$wrap.css({	zIndex: 0,	display: 'none'});
+				$detail.attr('src','about:blank');
+			},
+			duration: d,
+			easing: 'linear',
+		});
 	}
 
-	function switchToDetail() {
-		if($body.hasClass('mode-detail')) return;
-		$body.removeClass('mode-initial mode-list');
-		$body.addClass('mode-detail');
-
-		/*
-		if ($body.hasClass('columns')) {
-			var $cont = $('#data-wrap');
-			var o = $this.offset();
-			var t = o.top-$cont.offset().top;
-			$body.addClass('to-detail');
-			$('#detail-wrap').css({
-				left:o.left+250,
-				opacity:0,
-				zIndex:10,
-			}).animate({
-				left:250,
-				opacity:1,
-			},600);
-			$('#data').animate({
-				left: -o.left+20
-			},600,function() {
-				$('#data').css({left:0});
-				$body.removeClass('columns to-detail');
-				$body.addClass('detail');
-				$cont.get(0).scrollTop = $this.get(0).offsetTop - t;
-			});
-		}
-		*/
-	}
 
 	var $selected;
 	var $selectedGhost;
@@ -118,53 +126,43 @@ var CLIENT = (function() {
 		$selectedGhost && $selectedGhost.remove();
 		$selectedGhost = $res
 		.clone()
+		.removeClass('selected')
 		.addClass('ghost')
-		.appendTo('#results-scroll');
+		.appendTo('#results');
+		fixSelection();
+		setTimeout(function() {
+			$selectedGhost.addClass('selected');
+		},0)
 	}
 	function fixSelection() {
 		if ($selected) {
-			var $scroll = $('results-scroll')
-			var t = $selected.offset().top;
-			var b = t + $selected.height();
-	 		var T = $('#results-scroll').offset().top;
-	 		var B = T + $('#results-scroll').height();
-			if (t<T) $selectedGhost.removeClass('bottom').addClass('top');
-			else if (b > B) $selectedGhost.addClass('bottom').removeClass('top');
-			else $selectedGhost.removeClass('bottom').removeClass('top');
+			var $scroll = $('#results-scroll');
+			var scroll = $scroll.get(0);
+			var selected = $selected.get(0);
+			var h = $selected.height();
+			var t = selected.offsetTop;
+			var b = t + h;
+	 		var T = scroll.scrollTop;
+	 		var B = T + $scroll.height();
+	 		
+			if (t<T) $selectedGhost.css({
+				display:'block',
+				top:T,
+			}); else if (b > B) $selectedGhost.css({
+				display:'block',
+				top: B-h
+			}); else $selectedGhost.css({
+				display:'block',
+				top: t
+			});
 		}
-		/*
-		var o = $('.result.selected').offset();
- 		var t = $('#data-wrap').offset().top;
- 		if (o && o.top < t) {
-    		console.log($selectedClone);
- 			$selectedClone.css({
- 				display:'block',
- 				top: t-5,
- 				left:20,
- 				bottom: 'auto',
- 				height: 'auto',
- 			})
- 		} else if (o && o.top + $('.result.selected').height() > $('#data-wrap').height()+t) {
- 			$selectedClone.css({
- 				display:'block',
- 				top: 'auto',
- 				left: 20,
- 				bottom: '0',
- 				height: 'auto',
- 			})
- 		} else {
- 			$selectedClone.css({
- 				display:'none',
- 			})
- 		}
- 		*/
 	}
 	var go = function (e) {
-		$('#spinner').addClass('loading');
+		//$('#spinner').addClass('loading');
 		var $this = $(this);
 		var $res = $this.closest('.result');
 		select($res);
-		switchToDetail();
+		switchListToDetail();
 		location.hash = $res.attr('id'); // - not workign in webkit
 		//location.href = location.href.replace('#.*','#'+$res.attr('id'));
 	}
@@ -187,7 +185,7 @@ var CLIENT = (function() {
 	}
 	function addResult(src,res,search,meta) {
 		var name = shorten(res.name||res.title,60); //TODO: fix scrapers to return name, NOT title
-		var description = shorten(res.description,100);
+		var description = shorten(res.description,130);
 		var id = (src.name+' '+name);
 		
 		var properties = '';//TODO: add semantic properties
@@ -230,7 +228,7 @@ var CLIENT = (function() {
 	var haveSearched = false;
 	function setup () {
     	$body = $('body');
-		$('body').addClass('initial');
+		$('body').addClass('mode-initial');
 		var socket = io.connect(location.host);
 		var q = gup('q');
 		$('#q').val(q);
@@ -238,10 +236,10 @@ var CLIENT = (function() {
 		var progress;
 		socket.on('welcome', function (data) {
 			console && console.log('welcome!');
-			if (haveSearched) return;
-			haveSearched = true;
-			switchToList();
 			if (q) {
+				if (haveSearched) return;
+				haveSearched = true;
+				switchDetailToList();
 				$('#q').addClass('spinner');
 			  	socket.emit('search', {
 			  		q: q
@@ -301,7 +299,7 @@ var CLIENT = (function() {
 		$('#submit').click(function(e) {
 			if($('#q').val()==gup('q')) {
 				e.preventDefault();
-				switchToList();
+				switchDetailToList();
 			}
 		});
 	}

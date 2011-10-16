@@ -4,7 +4,7 @@
 .box-wrap {
   position:absolute;
   left: 0;
-  right:0;
+  width:100%; 
 }
 .box-header {
   height:15px;/*box-header.height*/
@@ -12,16 +12,16 @@
 }
 .box-scroll {
   position:absolute;
-  left:10px;
-  right:10px;
+  left:0px;
+  right:0px;
   bottom:0;
   display:inline-block;
-  height:100%;
   overflow:hidden;
-  top:20px;/*box-header.height*/
+  top:15px;/*box-header.height*/
 }
 .box {
   height:100%;
+  position:relative;
 }
 
 /* images */
@@ -44,11 +44,12 @@ body.mode-detail #results-wrap {
 }
 
 #results {
-  width:240px;/*results.column-width*/
-  padding:10px 0;/*results.gap*/
+  width:240px;/*results.width*/
+  padding:0px;
 }
 body.mode-detail #results-scroll {
   width:240px;/*results.column-width*/
+  padding:0;
 }
 
 body.mode-list #results {

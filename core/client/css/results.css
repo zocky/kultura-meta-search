@@ -4,37 +4,32 @@
 #results .datasource {
   clear:both;
 }
-body.mode-list .datasource {
+.datasource {
   padding-right:10px;/*results.gap*/
+  padding-left:10px;/*results.gap*/
 }
 
 
 #results .datasource-header {
   display:inline-block;
-  width:220px;/*results.width*/
+  width:100%;/*results.width*/
 }
 
 /* R E S U L T */
 #results .result {
   clear:both;
   display:inline-block;
-  width:220px;/*results.width*/
+  width:100%;/*results.width*/
+}
+#results .result > footer {
+  clear:both;
 }
 
 #results-scroll .result.ghost {
   display:none;
   position:absolute;
-  left:0;
-}
-body.mode-detail #results-scroll .result.ghost.top {
-  display:block;
-  top:0;
-  bottom:auto;
-}
-body.mode-detail #results-scroll .ghost.bottom {
-  display:block;
-  top:auto;
-  bottom:0;
+  z-index:1;
+  left:5px;
 }
 /* I M A G E S */
 #images {

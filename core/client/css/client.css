@@ -15,15 +15,6 @@ DEVELOPERS:
   settings that can be overriden by customizers should be properly tagged 
   and included in overrides.css.
 
-CUSTOMIZABLE:
-  * /custom/fonts.css
-  * /custom/overrides.css
-  	the single-point mechanism for customizing core sizing/positioning of elements.
-  	make sure to keep it synchronized with core files and correctly tagged.
-  * styles.css
-
-    definitions of three generic font families - Headline, Plain and Narrow
-  
   * general.css
     default general styling of the body element, links, headings, etc.
   * main.css 
@@ -40,13 +31,10 @@ CUSTOMIZABLE:
 
 
 
-@import "/css/fonts.css";
-@import "/css/general.css";
-@import "/css/main.css";
-@import "/css/header.css";
-@import "/css/content.css";
-@import "/css/results.css";
+@import "general.css";
+@import "main.css";
+@import "header.css";
+@import "content.css";
+@import "results.css";
 
-/* these must come last */
-@import "/static/css/overrides.css";
-@import "/static/css/styles.css";
+
