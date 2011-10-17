@@ -1,4 +1,4 @@
-// KULTURA Meta search
+// KULTURA info search
 // (c) 2011 user:zocky @ wiki.ljudmila.org
 // GPL 3.0 applies
 //
@@ -167,14 +167,14 @@ var CLIENT = (function() {
 		//location.href = location.href.replace('#.*','#'+$res.attr('id'));
 	}
 
-	function addSource(src,search,meta) {
+	function addSource(src,search,info) {
 		$('#results-header nav').append(' <a class="jumpToSource" href="#datasource-'+src.id+'">'+src.name+'</a> ');
 		return $(
 			'<section id="datasource-'+src.id+'" class="datasource">'
 		+  	'<header class="datasource-header">'
 		+			'<h3>'
 		+				'<a class="datasource-url" target="detail" href="'+search+'" title="Rezultati na: '+src.name+'">'
-		+					'<img class="datasource-icon" src="'+meta.shortcutIcon+'" alt="'+src.name+'" onerror="$(this).remove()">' //TODO: get correct favicon from scraper!
+		+					'<img class="datasource-icon" src="'+info.shortcutIcon+'" alt="'+src.name+'" onerror="$(this).remove()">' //TODO: get correct favicon from scraper!
 		+				'</a>'
 		+				'<a class="datasource-searchurl" target="detail" href="'+search+'" title="Rezultati na: '+src.name+'">'+src.name+'</a>'
 		+			'</h3>'
@@ -183,7 +183,7 @@ var CLIENT = (function() {
 		)
 		.appendTo('#results');
 	}
-	function addResult(src,res,search,meta) {
+	function addResult(src,res,search,info) {
 		var name = shorten(res.name||res.title,60); //TODO: fix scrapers to return name, NOT title
 		var description = shorten(res.description,130);
 		var id = (src.name+' '+name);
@@ -215,7 +215,7 @@ var CLIENT = (function() {
 		} else {
 			var $datasource = $('#datasource-'+src.id);
 			if ($datasource.length == 0) {
-				$datasource = addSource(src,search,meta);
+				$datasource = addSource(src,search,info);
 				$datasource.find('.datasource-header').append($res);
 			} else {
 				$datasource.append($res);
@@ -229,8 +229,9 @@ var CLIENT = (function() {
 	function setup () {
     	$body = $('body');
 		$('body').addClass('mode-initial');
-		var socket = io.connect(location.host);
 		var q = gup('q');
+		if(q) switchDetailToList();
+		var socket = io.connect(location.host);
 		$('#q').val(q);
 		var total;
 		var progress;
@@ -239,7 +240,6 @@ var CLIENT = (function() {
 			if (q) {
 				if (haveSearched) return;
 				haveSearched = true;
-				switchDetailToList();
 				$('#q').addClass('spinner');
 			  	socket.emit('search', {
 			  		q: q
@@ -249,29 +249,24 @@ var CLIENT = (function() {
 				fixProgress(0);
 		  	}
 		});
-		socket.on('searchstarted', function (data) {
-			total = data.sourcecount+1;
+		socket.on('search_started', function (data) {
+			console.log(data);
+			total = data.sourceCount+1;
 			progress ++;
 			fixProgress(progress/total);
 		});
-		function doAddResult(data,i) {
-			if (i>=data.results.length) return;
-			addResult(data.source,data.results[i],data.search,data.meta);
-			setTimeout(function() {
-				doAddResult(data,i+1);
-			},10);
-		}
-		socket.on('results', function (data) {
-			doAddResult(data,0);
+		socket.on('search_results', function (data) {
+			for(var i in data.results) {
+				addResult(data.source,data.results[i],data.search,data.info);
+			}
 			progress ++;
 			fixProgress(progress/total);
 		});
-		socket.on('error', function (data) {
+		socket.on('search_error', function (data) {
 			progress ++;
 			fixProgress(progress/total);
 		});
-		socket.on('endresults', function (data) {
-			$('#q').removeClass('spinner');
+		socket.on('search_complete', function (data) {
 			fixProgress(1);
 			progress = 0;
 			total = 0;
