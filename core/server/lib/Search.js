@@ -16,15 +16,18 @@ function Search( socket , sources ) {
 	this.socket.on('disconnect', function() {
 		delete me.socket;
 	});
-	this.socket.emit('welcome', {protocol:'kultura',version:'0.1prealpha'});
+	this.emit('welcome', {protocol:'kultura',version:'0.1prealpha'});
 }
 Search.prototype = {
+	emit: function(key,msg) {
+		this.socket && this.socket.emit(key,msg);
+	},
 	addSource: function (id, src) {
 		this.store[id] = {
 			source: src,
 			meta: {}
 		};
-		this.socket.emit('source-added', src.info);
+		this.emit('source-added', src.info);
 	},
 	search: function(msg) {
 		if (this.q) {
@@ -42,7 +45,7 @@ Search.prototype = {
 			count++;
 			me.searchSource(i, {q: this.q});
 		};
-		this.socket.emit('search_started', { sourceCount: count});
+		this.emit('search_started', { sourceCount: count});
 	},
 	searchMore: function(msg) {
 		var id = msg.id;
@@ -56,7 +59,7 @@ Search.prototype = {
 			return;
 		};
 		this.searchSource(id, {q: this.q, more: this.store[id].meta.more});
-		this.socket.emit('search_started', { sourceCount: 1});
+		this.emit('search_started', { sourceCount: 1});
 	},
 	searchSource: function(id,args) {
 		if (!this.store[id]) {
@@ -88,18 +91,18 @@ Search.prototype = {
 			res.type = res.type || 'Thing';
 			if (res.title && res.url) send.results.push(res);
 		}
-		this.socket.emit('search_results',send);
+		this.emit('search_results',send);
 		this.busy--;
 		if (this.busy==0) {
-			this.socket.emit('search_complete',{});
+			this.emit('search_complete',{});
 		}
 	},
 	error: function(m) {
-		this.socket.emit('search_error',{message:m});
+		this.emit('search_error',{message:m});
 	},
 	sourceError: function(id,m) {
 		this.busy--;
-		this.socket.emit('source_error',{source:id,message:m});
+		this.emit('source_error',{source:id,message:m});
 	}
 }
 module.exports = Search;
