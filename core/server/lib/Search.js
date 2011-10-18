@@ -10,7 +10,7 @@ function Search( socket , sources ) {
 	this.socket.on('search', function(msg) {
 		me.search(msg);
 	});
-	this.socket.on('search-more', function(msg) {
+	this.socket.on('search_more', function(msg) {
 		me.searchMore(msg);
 	});
 	this.socket.on('disconnect', function() {
@@ -25,9 +25,10 @@ Search.prototype = {
 	addSource: function (id, src) {
 		this.store[id] = {
 			source: src,
-			meta: {}
+			meta: {},
+			info: {}
 		};
-		this.emit('source-added', src.info);
+		this.emit('source_added', src.info);
 	},
 	search: function(msg) {
 		if (this.q) {
@@ -48,17 +49,17 @@ Search.prototype = {
 		this.emit('search_started', { sourceCount: count});
 	},
 	searchMore: function(msg) {
-		var id = msg.id;
+		var id = msg.source;
 		if (!this.store[id]) {
 			this.sourceError(id,'bad source id');
 			return;
 		};
-		var more = this.store[id].meta.more;
+		var more = this.store[id].meta.continue;
 		if (!more) {
 			this.sourceError(id,'no more results');
 			return;
 		};
-		this.searchSource(id, {q: this.q, more: this.store[id].meta.more});
+		this.searchSource(id, {q: this.q, continue: this.store[id].meta.continue});
 		this.emit('search_started', { sourceCount: 1});
 	},
 	searchSource: function(id,args) {
@@ -76,10 +77,11 @@ Search.prototype = {
 	onResults: function(id,data) {
 		var store = this.store[id];
 		var src = this.store[id].source;
-		store.meta = data.meta;
+		store.meta = data.meta || {};
 		for (var i in data.info) {
 			store.info[i] = data.info[i];
 		}
+		store.info.more = !!store.meta['continue'];
 		var send = {
 			search: data.search,
 			source: src.info,
@@ -98,9 +100,11 @@ Search.prototype = {
 		}
 	},
 	error: function(m) {
+		console.log('error: '+m)
 		this.emit('search_error',{message:m});
 	},
 	sourceError: function(id,m) {
+		console.log('source error ('+id+'): '+m)
 		this.busy--;
 		this.emit('source_error',{source:id,message:m});
 	}

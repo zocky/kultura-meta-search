@@ -20,6 +20,7 @@
 }
 */
 
+	
 var CLIENT = (function() {
 	var ret = {
 		q: '',
@@ -48,7 +49,34 @@ var CLIENT = (function() {
 		str = str || '';
 		return str.length>len ? str.substr(0,len-1)+'…' : str;
 	}
-
+	function fixColumns() {
+		var c = 0;
+		var l = 10;
+		var $scroll = $('#results-scroll');
+		var h = $scroll.height()-10;
+		var t = $scroll.offset().top;
+		var $results = $('#results .result');
+		$results.css('margin-top',0);
+		$results.each(function(n) {
+			var $this = $(this);
+			var o = $this.offset();
+			if (l < o.left) {
+				l = o.left;
+				$this = $($results[n-1]);
+				var o = $this.offset();
+				var b = h + t - (o.top + $this.height());
+				var m = b % (c-1);
+				var d = (b - m) / (c-1);
+				for (var i=1; i<c; i++) {
+					$($results[n-i]).css('margin-top', 0+d+(i<=m));
+				}
+				c=0;
+			} else {
+				c++;
+			}
+		});
+	}
+	$(window).resize(fixColumns);
 	function switchListToDetail() {
 		var d=300;
 		if($body.hasClass('mode-detail')) return;
@@ -86,6 +114,7 @@ var CLIENT = (function() {
 		$selectedGhost && $selectedGhost.css('display','none');
 		$body.removeClass('mode-initial mode-detail');
 		$body.addClass('mode-list');
+		fixColumns();
 		delete location.hash;
 		if(!$selected) return;
 
@@ -119,6 +148,7 @@ var CLIENT = (function() {
 	var $selected;
 	var $selectedGhost;
 	
+
 	function select($res) {
 		$selected && $selected.removeClass('selected');
 		$res.addClass('selected');
@@ -244,9 +274,9 @@ var CLIENT = (function() {
 			  	socket.emit('search', {
 			  		q: q
 			  	});
-			  	total = 0;
-			  	progress = 0;
-				fixProgress(0);
+			  	total = 1;
+			  	progress = 100;
+				fixProgress(1);
 		  	}
 		});
 		socket.on('search_started', function (data) {
@@ -256,13 +286,23 @@ var CLIENT = (function() {
 			fixProgress(progress/total);
 		});
 		socket.on('search_results', function (data) {
+			console.log(data.source.id);
 			for(var i in data.results) {
 				addResult(data.source,data.results[i],data.search,data.info);
 			}
+			if (data.info.more) {
+				$('<button>še 20 od '+(data.info.total-$('#datasource-'+data.source.id+' .result').length)+' zadetkov</button>')
+				.click(function() {
+					socket.emit('search_more',{source:data.source.id});
+					$(this).remove();
+				})
+				.appendTo('#datasource-'+data.source.id);
+			}
 			progress ++;
+			setTimeout(fixColumns,0);
 			fixProgress(progress/total);
 		});
-		socket.on('search_error', function (data) {
+		socket.on('source_error', function (data) {
 			progress ++;
 			fixProgress(progress/total);
 		});

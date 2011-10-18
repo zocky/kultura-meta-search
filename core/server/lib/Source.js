@@ -3,7 +3,7 @@ var http = require('http');
 var querystring = require('querystring');
 
 function wget( options , onSuccess , onFail ) {
-	console.log( options.host , options.port , options.path );
+	//console.log( options.host , options.port , options.path );
 	http.get( options, function( res ) {
 		res.setEncoding( 'utf8' );
 		var data = '';

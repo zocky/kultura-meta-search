@@ -1,3 +1,4 @@
+#!/usr/local/bin/node
 // Kultura Meta Search
 // (c) 2011 User:Zocky@wiki.ljudmila.org
 // GPL 3.0 applies
