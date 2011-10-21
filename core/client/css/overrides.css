@@ -50,7 +50,7 @@ body.mode-initial #submit-wrap {        width: 60px; }
 /*box-header.height*/
 .box-header {                          height: 15px; }
 .box-header {                     line-height: 15px; }
-.box-scroll {                             top: 15px; }
+.box-scroll, .box-overlay {               top: 15px; }
 /*images.height*/;
 #images-wrap {                         height:100px; }
 #results-wrap {                           top:100px; }

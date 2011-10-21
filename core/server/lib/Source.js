@@ -31,7 +31,8 @@ Source = function Source( id , opt , tmpl) {
 	this.info = {
 		id: id,
 		name: opt.name,
-		home: opt.home
+		home: opt.home,
+		shorter: opt.shorter || opt.name
 	}
 }
 

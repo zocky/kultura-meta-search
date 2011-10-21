@@ -70,7 +70,7 @@ Search.prototype = {
 		this.store[id].source.search(args, function (data) {
 			me.onResults(id, data);
 		}, function(e) {
-			me.sourceError(id,'source unreachable');
+			me.sourceError(id,e.message );
 		});
 		this.busy++;
 	},

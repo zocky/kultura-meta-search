@@ -14,7 +14,10 @@
   display:inline-block;
   width:100%;/*results.width*/
 }
-
+#results .datasource-header img.datasource-icon {
+	width:16px;
+	height:16px;
+}
 /* R E S U L T */
 #results .result {
   clear:both;

@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd $(dirname $0)/..
-nohup node index.js $@ > local/log/kultura.log 2> local/log/kultura.error.log
+nohup node index.js $@ > local/log/kultura.log 2> local/log/kultura.error.log &

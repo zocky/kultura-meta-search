@@ -3,7 +3,7 @@
 	<head> 
 		<title>Kulturec</title> 
 	   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+		<script src="/js/jquery.min.js"></script>
 		<script src="http://services.ljudmila.net/static/jq/jquery.mousewheel.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/client.js"></script>
@@ -44,6 +44,8 @@
 						<div id="results-scroll" class="box-scroll">
 							<div id="results" class="box"></div>
 						</div>
+						<div id="results-overlay" class="box-overlay">
+						</div>
 					</div>
 				</div>
 			</div>
@@ -52,7 +54,7 @@
 			</footer>
 		</div>
 		<div id="detail-wrap">
-			<iframe id="detail" name="detail" frameBorder="0" onload="$('#spinner').removeClass('loading');"></iframe>
+			<iframe id="detail" name="kulturec-detail" frameBorder="0" onload="$('#spinner').removeClass('loading');"></iframe>
 			<div id="spinner"></div>
 		</div>
 	</body>
